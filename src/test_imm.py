@@ -1,0 +1,100 @@
+import unittest
+from hypothesis import given
+import hypothesis.strategies as st
+from immutable import *
+
+
+class TestImmutableList(unittest.TestCase):
+    def test_size(self):
+        self.assertEqual(size(DA_imm([])), 0)
+        self.assertEqual(size(DA_imm([1])), 1)
+        self.assertEqual(size(DA_imm([1, 2])), 2)
+
+    def test_to_list(self):
+        lst = [1, 2]
+        a = DA_imm(lst)
+        b = to_list(a)
+        self.assertEqual(lst, b)
+
+    def test_from_list(self):
+        test_data = [
+            [],
+            ['a'],
+            ['a', 'b']
+        ]
+        for e in test_data:
+            lst = from_list(e)
+            self.assertEqual(to_list(lst), e)
+
+    def test_add_to_head(self):
+        DA1 = add_to_head(DA_imm([]), 1)
+        DA2 = DA_imm([1])
+        self.assertEqual(to_list(DA1), to_list(DA2))
+
+    def test_add_to_tail(self):
+        DA1 = add_to_tail(DA_imm([1, 2]), 1)
+        DA2 = DA_imm([1, 2, 1])
+        self.assertEqual(to_list(DA1), to_list(DA2))
+
+    def test_find(self):
+        a = DA_imm([1, 2, 3])
+        self.assertEqual(find(a, 1), True)
+
+    def test_remove(self):
+        a = DA_imm([1, 2, 3])
+        b = remove(a,1)
+        self.assertEqual(to_list(b), [1,3])
+        
+    def test_filter(self):
+        a = DA_imm([1,2,2])
+        b = filter(a,2)
+        self.assertEqual(to_list(b), [1])
+
+    def test_map(self):
+        a = DA_imm([1,2,3])
+        b = map(a,str)
+        self.assertEqual(to_list(b), ['1','2','3'])
+
+    def test_reduce(self):
+        # sum of empty list
+        lst = DA_imm()
+        self.assertEqual(reduce(lst,(lambda st, e: st + e), 0), 0)
+        # sum of list
+        lst = DA_imm()
+        a = from_list([1, 2, 3])
+        self.assertEqual(reduce(a,(lambda st, e: st + e), 0), 6)
+
+    def test_mconcat(self):
+        a = DA_imm([1,2])
+        b = DA_imm([1,2])
+        c = mconcat(a,b)
+        self.assertEqual(to_list(c),[1,2,1,2])
+
+    @given(st.lists(st.integers()))
+    def test_from_list_to_list_equality(self, a):
+        self.assertEqual(to_list(from_list(a)), a)
+
+    @given(st.lists(st.integers()))
+    def test_monoid_identity(self, lst):
+        a = from_list(lst)
+        self.assertEqual(to_list(mconcat(mempty(), a)), to_list(a))
+        self.assertEqual(to_list(mconcat(a, mempty())), to_list(a))
+
+    def test_iter(self):
+        x = [1, 2, 3,4]
+        lst = from_list(x)
+        tmp = []
+        try:
+            get_next = iterator(lst)
+            while True:
+                tmp.append(get_next())
+        except StopIteration:
+            pass
+        self.assertEqual(x, tmp)
+        self.assertEqual(to_list(lst), tmp)
+
+        get_next = iterator(None)
+        self.assertRaises(StopIteration, lambda: get_next())
+
+if __name__ == '__main__':
+    unittest.main()
