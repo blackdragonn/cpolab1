@@ -22,7 +22,7 @@
 &emsp;&emsp;&emsp;&emsp;2、property-based tests (for features with specific properties, such as monoid properties).
 ### Contribution summary for each group member ###
 &emsp;&emsp;Longfei Jiang: Complete the mutable object and immutable object data structures, and most of test functions.<br>
-&emsp;&emsp;Juntao Gao: Partial data structure methods are implemented, as well as some test functions and final experimental reports.<br>
+&emsp;&emsp;Juntao Gao: Partial data structure methods are implemented, as well as some test functions and final experimental reports.modify procedure<br>
 ### Explanation of taken design decisions and analysis ###
 &emsp;&emsp;The data structure that our group needs to implement is a dynamic array. The difference between a dynamic array and a fixed array is that the length of the dynamic array is variable, so we implement our own dynamic array by encapsulating the static array.<br> &emsp;&emsp;Using static arrays as attributes of the Python class, you can use built-in lists within nodes of fixed size. Of course, what we have implemented is a dynamic array, which can be expanded by inserting data in the head or tail. Then complete some common methods of dynamic array required by the experiment, such as array length, map and iterator.<br>
 ### How to use developed software ###
