@@ -1,12 +1,19 @@
 class DA_mut(object):
     def __init__(self, l=[]):
         self.s = 0
-        self.l = [None for i in range(100)]
+        self._capacity = 100    #capacity
+        self.l = [None for i in range(self._capacity)]
         for i in range(len(l)):
             self.l[i] = l[i]
 
     def __str__(self):
         return " : ".join(map(str, self.to_list()))
+
+    def change_capacity(self,a):
+        self._capacity =a
+        i=a-self._capacity
+        for k in range(i):
+            self.l.append(None)
 
     @property
     def size(self):
@@ -29,6 +36,7 @@ class DA_mut(object):
     def from_list(self, lst):
         for i in range(len(lst)):
             self.l[i] = lst[i]
+        return self
 
     def add_to_head(self, value):
         lst = [value]
@@ -69,12 +77,25 @@ class DA_mut(object):
         return lst_filter
 
     def mempty(self):
-        self.l = [None for i in range(100)]
+        return None
 
-    def mconcat(self,DA2):
-        i = 0
-        for e in DA2:
-            self.l[self.size + i ] = e
+    def mconcat(self,DA1,DA2):
+        self.l=[]
+        i=0
+        if DA1 is  None:
+            for e in DA2:
+                self.l.append(e)
+        elif DA2 is  None:
+            for e in DA1:
+                self.l.append(e)
+        else:
+            for e in DA1:
+                self.l.append(e)
+            for e in DA2:
+                self.l.append(e)
+        return self.l
+
+      
 
     def remove(self,value):
         new = [None for i in range(100)]

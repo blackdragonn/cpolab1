@@ -1,14 +1,17 @@
 from mutable import *
 import hypothesis.strategies as st
 from hypothesis import given
-
 import unittest
-
 
 class TestMutableList(unittest.TestCase):
     def test_size(self):
         self.assertEqual(DA_mut().size, 0)
         self.assertEqual(DA_mut([1, 2, 3]).size, 3)
+    
+    def test_change_capacity(self):
+        lst=DA_mut()
+        lst.change_capacity(120)
+        self.assertEqual(lst._capacity, 120)
 
     def test_to_list(self):
         self.assertEqual(DA_mut().to_list(), [])
@@ -81,16 +84,12 @@ class TestMutableList(unittest.TestCase):
         lst = DA_mut([1, 2, 3])
         self.assertEqual(lst.filter(1), [2, 3])
 
-    def test_mempty(self):
-        lst = DA_mut([1, 2, 3])
-        lst.mempty()
-        self.assertEqual(lst.to_list(), [])
-
     def test_mconcat(self):
-        lst1 = DA_mut([1, 2, 3])
-        lst2 = DA_mut([1, 2, 3])
-        lst1.mconcat(lst2)
-        self.assertEqual(lst1.to_list(), [1, 2, 3, 1, 2, 3])
+        lst=DA_mut()
+        lst1 = [1, 2, 3]
+        lst2 = [1, 2, 3]
+        lst.mconcat(lst1,lst2)
+        self.assertEqual(lst.to_list(), [1, 2, 3, 1, 2, 3])
 
     def test_remove(self):
         lst = DA_mut([1, 2, 3])
@@ -110,6 +109,21 @@ class TestMutableList(unittest.TestCase):
         lst2 = DA_mut()
         lst2.from_list(a)
         self.assertEqual(lst2.size, len(a))
+
+    @given(st.lists(st.integers()))
+    def test_monoid_identity(self,li):
+        lst = DA_mut()
+        lst.from_list(li)
+        self.assertEqual(lst.mconcat(lst.mempty(), lst.to_list()),li)
+        self.assertEqual(lst.mconcat(lst.to_list(), lst.mempty()),li)
+
+    @given(a=st.lists(st.integers()),b=st.lists(st.integers()),c=st.lists(st.integers()))
+    def test_monoid_associativity(self,a,b,c):
+        lst=DA_mut()
+        lst1 = DA_mut(a)
+        lst2 = DA_mut(b)
+        lst3= DA_mut(c)
+        self.assertEqual(lst.mconcat(lst.mconcat(lst1.to_list(), lst2.to_list()),lst3),lst.mconcat(lst1,lst.mconcat(lst2.to_list(), lst3.to_list())))
 
     def test_iter(self):
         x = [1, 2, 3]

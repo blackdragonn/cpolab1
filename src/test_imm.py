@@ -77,8 +77,15 @@ class TestImmutableList(unittest.TestCase):
     @given(st.lists(st.integers()))
     def test_monoid_identity(self, lst):
         a = from_list(lst)
-        self.assertEqual(to_list(mconcat(mempty(), a)), to_list(a))
-        self.assertEqual(to_list(mconcat(a, mempty())), to_list(a))
+        self.assertEqual(mconcat(mempty(), a), a)
+        self.assertEqual(mconcat(a, mempty()), a)
+
+    @given(a=st.lists(st.integers()),b=st.lists(st.integers()),c=st.lists(st.integers()))
+    def test_monoid_associativity(self,a,b,c):
+        lst1 = from_list(a)
+        lst2 = from_list(b)
+        lst3= from_list(c)
+        self.assertEqual(mconcat(mconcat(lst1, lst2),lst3),mconcat(lst1,mconcat(lst2, lst3)))
 
     def test_iter(self):
         x = [1, 2, 3,4]
